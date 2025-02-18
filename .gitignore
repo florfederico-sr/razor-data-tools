@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/razor-data-tools/bin
+/razor-data-tools/obj
+/razor-data-tools/certs
+/razor-data-tools/razor-data-tools.csproj.user

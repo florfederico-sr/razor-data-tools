@@ -1,0 +1,20 @@
+@page
+@model razor_data_tools.Pages.Tools.BMI_Earnings_ExportModel
+@{
+
+}
+<form class="form-horizontal" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <h1 class="h2">Export formatted csv data for BMI Affiliate</h1>
+        <div class="col-sm-10">
+            <label>Choose a name to download formatted earnings:</label>
+            <select name="sSelectedCustomer" asp-items="Model.Customers">
+                <option value="">Choose a customer</option>
+            </select>
+            <input asp-page-handler="FileDownload" type="submit" value="Export" />
+        </div>
+
+    </div>
+
+    
+</form>

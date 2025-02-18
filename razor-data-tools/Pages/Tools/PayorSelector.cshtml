@@ -1,0 +1,29 @@
+﻿@page
+@model razor_data_tools.Pages.Tools.PayorSelectorModel
+@{
+}
+
+<form method="post">
+    <div>
+        <label for="dropdown">Select an option:</label>
+        <select id="dropdown" asp-for="SelectedOption">
+            @foreach (var option in Model.Options)
+            {
+                <option value="@option.Value">@option.Text</option>
+            }
+        </select>
+    </div>
+    <div>
+        <label for="textBox1">Textbox 1:</label>
+        <input id="textBox1" type="date" asp-for="TextBox1Value" />
+    </div>
+    <div>
+        <label for="textBox2">Textbox 2:</label>
+        <input id="textBox2" type="date" asp-for="TextBox2Value" />
+    </div>
+    <button type="submit">Submit</button>
+</form>
+
+
+
+

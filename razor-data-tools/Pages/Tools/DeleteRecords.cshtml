@@ -1,0 +1,159 @@
+@*@page -- Disabling page*@ 
+@model razor_data_tools.Pages.Tools.DeleteRecordsModel
+@{
+    // Layout = null;
+Layout = "_Layout";
+ViewData["Title"] = "Delete Records";
+}
+
+<h2>Delete Records</h2>
+
+<div>
+    <form method="post" id="deleteForm">
+        <div class="form-group">
+            <label for="artist">Artist</label>
+            <select id="artist" name="SelectedArtist" class="form-control" onchange="populatePayors()" required>
+                <option value="">Select Artist</option>
+                @foreach (var artist in Model.Artists)
+                {
+                <option value="@artist.Id">@artist.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="payor">Payor</label>
+            <select id="payor" name="SelectedPayor" class="form-control" onchange="populateFileNames()" disabled required>
+                <option value="">Select Payor</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="fileName">File Name</label>
+            <select id="fileName" name="SelectedFileName" class="form-control" onchange="showDeleteButton()" disabled required>
+                <option value="">Select File Name</option>
+            </select>
+        </div>
+
+        <button type="submit" id="deleteButton" class="btn btn-danger" style="display:none;">Delete</button>
+    </form>
+</div>
+
+<script>
+
+    function populatePayors() {
+        // Get the selected artist ID from the dropdown
+        var artistId = document.getElementById('artist').value;
+
+        // Ensure an artist is selected before making the request
+        if (!artistId) {
+            console.warn('No artist selected');
+            return;
+        }
+
+        // Dynamically generate the URL with the artistId as a query parameter using Razor syntax
+        var url = '@Url.Page("/Tools/DeleteRecords", new { handler = "GetPayors" })' + '&artistId=' + encodeURIComponent(artistId);
+
+        // Make the AJAX call using the dynamically generated URL
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Process the received JSON data
+                console.log('Received Payors Data:', data);
+
+                // Get the dropdown element
+                var payorDropdown = document.getElementById('payor');
+
+                // Clear previous options
+                payorDropdown.innerHTML = '<option value="">Select Payor</option>';
+
+                // Populate dropdown with new options
+                data.forEach(payor => {
+                    if (payor && payor.id && payor.name) {
+                        var option = document.createElement('option');
+                        option.value = payor.id;
+                        option.text = payor.name;
+                        payorDropdown.appendChild(option);
+                    } else {
+                        console.warn('Invalid payor data received:', payor);
+                    }
+                });
+
+                // Enable the dropdown after it is populated
+                payorDropdown.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching payors:', error.message);
+            });
+    }
+
+
+
+    function populateFileNames() {
+        // Get the selected artist ID and payor ID from the dropdowns
+        var artistId = document.getElementById('artist').value;
+        var payorId = document.getElementById('payor').value;
+
+        // Ensure both artistId and payorId are selected before making the request
+        if (!artistId) {
+            console.warn('No artist selected');
+            return;
+        }
+        if (!payorId) {
+            console.warn('No payor selected');
+            return;
+        }
+
+        // Dynamically generate the URL with both artistId and payorId as query parameters using Razor syntax
+        var url = '@Url.Page("/Tools/DeleteRecords", new { handler = "GetFileNames" })'
+            + '&artistId=' + encodeURIComponent(artistId)
+            + '&payorId=' + encodeURIComponent(payorId);
+
+        // Make the AJAX call using the dynamically generated URL
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Process the received JSON data
+                console.log('Received File Names Data:', data);
+
+                // Get the file name dropdown element
+                var fileNameDropdown = document.getElementById('fileName');
+
+                // Clear previous options
+                fileNameDropdown.innerHTML = '<option value="">Select File Name</option>';
+
+                // Populate dropdown with new options
+                data.forEach(file => {
+                    if (file && file.id && file.name) {
+                        var option = document.createElement('option');
+                        option.value = file.id;
+                        option.text = file.name;
+                        fileNameDropdown.appendChild(option);
+                    } else {
+                        console.warn('Invalid file data received:', file);
+                    }
+                });
+
+                // Enable the dropdown after it is populated
+                fileNameDropdown.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error fetching file names:', error.message);
+            });
+    }
+
+    function showDeleteButton() {
+        var fileName = document.getElementById("fileName").value;
+        document.getElementById("deleteButton").style.display = fileName ? 'block' : 'none';
+    }
+</script>

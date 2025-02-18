@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Data Tools</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/dashboard.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400" rel="stylesheet">
+
+</head>
+<body>
+    <!--Begin Bootstrap Dashboard Navigation -->
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+        <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#"><h3>Data Tools</h3></a>
+        
+        <ul class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                
+            </li>
+        </ul>
+    </nav>
+    <br />
+    <br />
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky" style="padding-left:20px;">                   
+                    <br />
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    BMI
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/BMI_Earnings_Import">
+                                                <span data-feather="file">Import</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/BMI_Earnings_Export">
+                                                <span data-feather="file">Export</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    ASCAP
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/ASCAP_Earnings">
+                                                <span data-feather="file">Import</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/ASCAP_Earnings_Export">
+                                                <span data-feather="file">Export</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/ASCAP_Works">
+                                                <span data-feather="file">Works</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    Tunecore
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/Tunecore_Earnings_Import_2">
+                                                <span data-feather="file">Import</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/Tunecore_Earnings_Export">
+                                                <span data-feather="file">Export</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <ul class="nav flex-column">
+                                <li class="nav-item">
+                                    File Tools
+                                    <ul class="nav flex-column">
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/FileUploader">
+                                                <span data-feather="file">Manual File Upload</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled disabled-link" asp-area="" asp-page="/Tools/DeleteRecords">
+                                                <span data-feather="file">Delete File Records</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark" asp-area="" asp-page="/Tools/ArtistPayorEarnings">
+                                                <span data-feather="file">Artist Earnings Download</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        @RenderBody()
+    </main>
+    
+    <!--Begin Bootstrap Dashboard Footer-->
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2020 - Sound Royalties - Data Tools
+            <!--  <  - <a asp-area="" asp-page="/Privacy">Privacy</a> -->
+        </div>
+    </footer>
+
+    <!--End Bootstrap Dashboard Footer-->
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,74 @@
+@page
+@model razor_data_tools.Pages.Tools.ASCAP_EarningsModel
+@{
+
+}
+
+<script type="text/javascript">function DisplayMessage() {
+        var x = document.getElementById("divMsg");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }</script>
+
+
+
+<form class="form-horizontal" method="post" enctype="multipart/form-data">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+
+
+    <div class="form-group">
+        <h1 class="h2">Import ASCAP International Earnings csv data to database</h1>
+
+        <div class="col-sm-10">
+            <input type="file" name="files" accept=".csv" multiple />
+            
+            <input asp-page-handler="FileUpload" type="submit" value="Import" onClick="DisplayMessage()" />
+
+            <div id="divMsg" style="font-size:x-large;display:none;">
+                Processing Data. Please stay on page until processing is complete...
+            </div>
+
+            <p>
+                @if (Model != null && Model.ImportedFileProperties != null)
+                {
+
+                    <table class="table">
+
+                        <tr>
+                            <th>File</th>
+                            <th># Imported</th>
+                        </tr>
+
+                        @foreach (var importedFile in Model.ImportedFileProperties)
+                        {
+                            <tr>
+                                <td>@importedFile.FileName</td>
+                                <td>@importedFile.RecordCount.ToString()</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="2">Processing is complete.</td>
+                        </tr>
+                    </table>
+                }
+
+            </p>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>document.getElementById("SelectedArtist").addEventListener("change", function () {
+            var display = this.value === "New Artist" ? "block" : "none";
+            document.getElementById("NewArtistNameGroup").style.display = display;
+        });</script>
+}

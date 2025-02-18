@@ -1,0 +1,170 @@
+@page
+@model razor_data_tools.Pages.Tools.FileUploader
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Upload File";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Upload File</title>
+    <style>
+        /* Style for the progress bar */
+        #progress-container {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #progress-bar {
+            width: 0;
+            height: 20px;
+            background-color: #4caf50;
+            text-align: center;
+            color: white;
+        }
+
+        /* Style for the processing label and spinner */
+        #processing-container {
+            display: none;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<h2>Manual File Upload</h2>
+<div>
+    <form id="uploadForm" method="post" class="form-horizontal" enctype="multipart/form-data">
+        <table class="table">
+            <div class="form-group">
+                <tr>
+                    <td><label for="firstName">First Name</label></td>
+                    <td><input type="text" id="firstName" name="firstName" class="form-control" required/></td>
+                </tr>
+                <tr>
+                    <td><label for="surname">Surname</label></td>
+                    <td><input type="text" id="surname" name="surname" class="form-control" required/></td>
+                </tr>
+                <tr>
+                    <td><label for="payor">Select Payor</label></td>
+                    <td>
+                        <select id="payor" name="payor" class="form-control" required>
+                            @foreach (var payor in Model.Payors)
+                            {
+                                <option value="@payor">@payor</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="file">Choose file to upload</label></td>
+                    <td><input type="file" id="file" name="file" class="form-control" required/></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button type="button" class="btn btn-primary" onclick="uploadFile()">Upload</button>
+                    </td>
+                </tr>
+            </div>
+        </table>
+    </form>
+
+    <!-- Progress bar container -->
+    <div id="progress-container">
+        <div id="progress-bar">0%</div>
+    </div>
+
+    <!-- Server processing label and spinner -->
+    <div id="processing-container">
+        <span class="spinner"></span> Server Processing...
+    </div>
+</div>
+
+<script>
+    function uploadFile() {
+        var form = document.getElementById('uploadForm');
+        var formData = new FormData(form);
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '@Url.Page("FileUploader")', true);
+
+        var progressBar = document.getElementById('progress-bar');
+        var progressContainer = document.getElementById('progress-container');
+        var processingContainer = document.getElementById('processing-container');
+
+        // Show the progress bar
+        xhr.onloadstart = function () {
+            progressContainer.style.display = 'block';
+        };
+
+        // Update progress bar during file upload
+        xhr.upload.onprogress = function (e) {
+            if (e.lengthComputable) {
+                var percentComplete = (e.loaded / e.total) * 100;
+                progressBar.style.width = percentComplete + '%';
+                progressBar.innerHTML = Math.round(percentComplete) + '%';
+            }
+        };
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                // Hide the processing label and spinner when done
+                processingContainer.style.display = 'none';
+                alert('File uploaded successfully!');
+                progressContainer.style.display = 'none';
+                progressBar.style.width = '0%'; // Reset after success
+                progressBar.innerHTML = '0%';
+            } else {
+                alert('An error occurred during the upload.');
+                processingContainer.style.display = 'none';
+                progressContainer.style.display = 'none';
+                progressBar.style.width = '0%'; // Reset after error
+                progressBar.innerHTML = '0%';
+            }
+        };
+
+        xhr.onerror = function () {
+            alert('An error occurred while uploading the file.');
+            processingContainer.style.display = 'none';
+            progressContainer.style.display = 'none';
+            progressBar.style.width = '0%'; // Reset after error
+            progressBar.innerHTML = '0%';
+        };
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                processingContainer.style.display = 'none'; // Hide processing label when request is done
+            }
+        };
+
+        // Display "Server Processing" label and spinner when upload is complete but waiting for server
+        xhr.upload.onload = function () {
+            progressBar.style.width = '100%';
+            progressBar.innerHTML = '100%';
+            processingContainer.style.display = 'block';
+        };
+
+        xhr.send(formData);
+    }
+</script>
+</body>
+</html>

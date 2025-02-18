@@ -1,0 +1,168 @@
+@page
+@model razor_data_tools.Pages.Tools.ArtistPayorEarningsModel
+@{
+Layout = "_Layout";
+ViewData["Title"] = "Artist Earnings Download";
+}
+
+<h2>Artist Earnings Download</h2>
+<div>
+    <form method="post">
+        <div class="form-group">
+            <label for="artist">Artist:</label>
+            <select id="artist" name="SelectedArtist" asp-for="SelectedArtist" onchange="getPayors(this.value)">
+                <option value="">Select an Artist</option>
+                @foreach (var artist in Model.Artists)
+                {
+                <option value="@artist.Id">@artist.Name</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="payor">Payor:</label>
+            <select id="payor" name="SelectedPayor" disabled onchange="showDownloadButton()">
+                <option value="">Select a Payor</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="button" id="downloadButton" onclick="executeQuery()" style="display:none;">Download Earnings</button>
+        </div>
+    </form>
+</div>
+
+<!-- Progress Indicator -->
+<div id="progressIndicator" style="display:none;">Running Query...</div>
+
+<!-- Dynamic progress bar (optional) -->
+<div id="progressBar" style="display:none; width: 100%; background-color: grey;">
+    <div id="progressBarFill" style="width: 0%; height: 30px; background-color: green;"></div>
+</div>
+
+<!-- Success message -->
+<div id="successMessage" style="display:none; color: green;">File has been downloaded successfully!</div>
+
+@section Scripts {
+<script>
+    // Show the Payors based on selected artist
+    function getPayors(artistId) {
+        if (artistId) {
+            fetch(`/Tools/ArtistPayorEarnings?handler=Payors&artistId=${artistId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const payorDropdown = document.getElementById('payor');
+                    payorDropdown.innerHTML = '<option value="">Select a Payor</option>';
+                    data.forEach(payor => {
+                        payorDropdown.innerHTML += `<option value="${payor.id}">${payor.name}</option>`;
+                    });
+                    payorDropdown.disabled = false;
+                });
+        }
+    }
+
+    // Show the download button after payor is selected
+    function showDownloadButton() {
+        document.getElementById('downloadButton').style.display = 'block';
+    }
+
+    // Execute the query and handle the progress indicator
+    async function executeQuery() {
+    // Show progress indicator and reset message
+    document.getElementById('progressIndicator').style.display = 'block';
+    document.getElementById('successMessage').style.display = 'none';
+
+    let progressBarFill = document.getElementById('progressBarFill');
+    let progressBar = document.getElementById('progressBar');
+    progressBar.style.display = 'block';
+    progressBarFill.style.width = '0%';  // Reset progress bar to 0%
+
+    try {
+        // Get the selected artist and payor IDs
+        const artistId = document.getElementById('artist').value;
+        const payorId = document.getElementById('payor').value;
+
+        // Check if both artistId and payorId are selected
+        if (!artistId || !payorId) {
+            alert("Please select both an Artist and a Payor before downloading.");
+            return;
+        }
+
+        // Build the query string with artistId and payorId
+        const url = `/Tools/ArtistPayorEarnings?handler=ExecuteQuery&artistId=${artistId}&payorId=${payorId}`;
+
+        // Fetch the file and track progress
+        const response = await fetch(url);
+
+        if (response.ok) {
+            const contentLength = response.headers.get('Content-Length');
+            
+            if (!contentLength) {
+                throw new Error("Unable to track download progress (no Content-Length header).");
+            }
+
+            // Read the response stream
+            const reader = response.body.getReader();
+            const totalBytes = parseInt(contentLength, 10);
+            let receivedBytes = 0;
+
+            const stream = new ReadableStream({
+                start(controller) {
+                    function push() {
+                        reader.read().then(({ done, value }) => {
+                            if (done) {
+                                controller.close();
+                                return;
+                            }
+
+                            // Calculate and update the progress bar
+                            receivedBytes += value.length;
+                            const percentage = Math.round((receivedBytes / totalBytes) * 100);
+                            progressBarFill.style.width = `${percentage}%`;
+
+                            // Push the value to the stream
+                            controller.enqueue(value);
+                            push();
+                        });
+                    }
+
+                    push();
+                }
+            });
+
+            // Create the downloadable blob from the stream
+            const blob = await new Response(stream).blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'PayorEarnings.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Hide progress indicator and reset the UI
+            document.getElementById('progressIndicator').style.display = 'none';
+            progressBar.style.display = 'none';
+            progressBarFill.style.width = '0%';  // Reset progress bar for next time
+
+            // Clear the form
+            document.getElementById('artist').value = '';
+            document.getElementById('payor').innerHTML = '<option value="">Select a Payor</option>';
+            document.getElementById('payor').disabled = true;
+            document.getElementById('downloadButton').style.display = 'none';
+
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+        } else {
+            throw new Error("Download failed.");
+        }
+    } catch (error) {
+        alert('An error occurred: ' + error.message);
+        document.getElementById('progressIndicator').style.display = 'none';
+        progressBar.style.display = 'none';
+        progressBarFill.style.width = '0%';  // Reset progress bar in case of error
+    }
+}
+
+
+
+</script>
+}

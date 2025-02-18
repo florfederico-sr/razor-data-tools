@@ -1,0 +1,83 @@
+﻿@page
+@model razor_data_tools.Pages.Tools.Tunecore_Earnings_Import_2Model
+@{
+}
+
+<script type="text/javascript">function DisplayMessage() {
+        var x = document.getElementById("divMsg");
+        if (x.style.display === "none") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+    }</script>
+
+
+<h2>Upload File</h2>
+
+<form method="post" enctype="multipart/form-data">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+
+    <div>
+        <label for="ArtistDropdown">Choose Artist to upload files or Create a new artist:</label>
+        <select asp-for="SelectedArtist" asp-items="Model.Artists">
+            <option value="">Please select an artist</option>
+        </select>
+    </div>
+
+    <div id="NewArtistNameGroup" style="display:none;">
+        <label for="NewArtistName">New Artist Name (Format - LASTNAME FIRSTNAME [no commas or punctuation]):</label>
+        <input asp-for="NewArtistName" class="form-control" style="width: 450px;" />
+    </div>
+
+    <div>
+        <label for="files">File:</label>
+        <input type="file" name="files" accept=".csv" multiple />
+    </div>
+   
+    <input asp-page-handler="FileUpload" type="submit" value="Import" onClick="DisplayMessage()" />
+
+    <div id="divMsg" style="font-size:x-large;display:none;">
+        Processing Data. Please stay on page until processing is complete...
+    </div>
+
+    <p>
+        @if (Model != null && Model.ImportedFileProperties != null)
+        {
+
+            <table class="table">
+
+                <tr>
+                    <th>File</th>
+                    <th># Imported</th>
+                </tr>
+
+                @foreach (var importedFile in Model.ImportedFileProperties)
+                {
+                    <tr>
+                        <td>@importedFile.FileName</td>
+                        <td>@importedFile.RecordCount.ToString()</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="2">Processing is complete.</td>
+                </tr>
+            </table>
+        }
+
+    </p>
+
+</form>
+
+@section Scripts {
+    <script>document.getElementById("SelectedArtist").addEventListener("change", function() {
+            var display = this.value === "New Artist" ? "block" : "none";
+            document.getElementById("NewArtistNameGroup").style.display = display;
+        });</script>
+}

@@ -1,0 +1,11 @@
+@page "/blazor"
+@using Radzen
+
+@{
+    Layout = "_Layout";
+}
+<link rel="stylesheet" href="_content/Radzen.Blazor/css/default.css">
+<script src="_content/Radzen.Blazor/Radzen.Blazor.js"></script>
+<app>
+    @(await Html.RenderComponentAsync<App>(RenderMode.Server))
+</app>
